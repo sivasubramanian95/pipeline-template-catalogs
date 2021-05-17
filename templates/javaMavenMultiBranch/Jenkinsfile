@@ -1,0 +1,35 @@
+def scmVars
+
+pipeline {
+    options {
+        buildDiscarder logRotator(artifactDaysToKeepStr: '5', artifactNumToKeepStr: '5', daysToKeepStr: '5', numToKeepStr: '5')
+        timeout(15)
+    }
+    libraries {
+      lib('jpl-podtemplates@master')
+    }
+  agent {
+    kubernetes {
+      defaultContainer 'maven'
+        yaml libraryResource("${agentYaml}")
+    }
+  }
+    environment {
+        MAVEN_ADDITIONAL_TARGETS = "${mavenAdditionalTargets}"
+    }
+    stages {
+        stage('Test') {
+            steps {
+                sh 'env'
+            }
+        }
+        stage('Build') {
+            steps {
+                container('maven') {
+                    sh 'mvn clean verify -C -e --show-version'
+                }
+            }
+        }
+    }
+
+}

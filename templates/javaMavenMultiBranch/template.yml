@@ -1,0 +1,35 @@
+type: pipeline-template
+version: 1
+name: javaMavenMultibranch
+templateType: MULTIBRANCH
+parameters:
+  - name: mavenAdditionalTargets
+    type: string
+    displayName: Additional Maven build targets
+  - name: agentYaml
+    type: string
+    displayName: Yaml file for agent
+    defaultValue: maven-jdk8-cache.yaml
+  - name: scanRepositoryInterval
+    type: string
+    displayName: Scan Repository Interval (# + type. 2 hours)
+    defaultValue: 2 hours
+  - name: repoName
+    type: string
+    displayName: GitHub repository name
+  - name: repoOwner
+    type: string
+    displayName: GitHub repository owner
+  - name: gitCredentialsId
+    type: credentials
+    displayName: CredentialsID for GitHub 
+multibranch:
+  branchSource:
+    github:
+      repoOwner: ${repoOwner}
+      repository: ${repoName}
+      credentialsId: ${gitCredentialsId}
+      traits: 
+        - headRegexFilter: 
+          regex: master
+  scanRepositoryInterval: ${scanRepositoryInterval}
